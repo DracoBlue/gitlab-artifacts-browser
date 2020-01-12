@@ -41,7 +41,7 @@ passport.use(new GitLabStrategy({
         clientID: process.env.GITLAB_OAUTH_APPLICATION_ID,
         clientSecret: process.env.GITLAB_OAUTH_APPLICATION_SECRET,
         callbackURL: process.env.GITLAB_OAUTH_REDIRECT_URI,
-        baseURL: process.env.GITLAB_BASE_URL
+        baseURL: process.env.GITLAB_URL
     },
     function(accessToken, refreshToken, profile, cb) {
     console.log({accessToken, refreshToken, profile});
