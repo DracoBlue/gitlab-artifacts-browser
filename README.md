@@ -21,9 +21,16 @@ GITLAB_OAUTH_REDIRECT_URI="http://gitlab-artiacts-browser.example.org/auth/gitla
 
 ## usage
 
+### specific file of a job
+
+If your gitlab url to a file is <https://git.example.org/namespace/projectname/-/jobs/5/artifacts/file/folder/subfolder/file.html> copy the part after the gitlab base url
+and suffix your gitlab artifacts browser url with that: <https://gitlab-artiacts-browser.example.org/namespace/projectname/-/jobs/5/artifacts/file/folder/subfolder/file.html>
+
+### latest file of a job of a branch
+
 Generate an url relative to your gitlab-artifacts-browser like this:
 
-<http://gitlab-artiacts-browser.example.org/namespace/project/branch/job/folder/subfolder/file.html>
+<http://gitlab-artiacts-browser.example.org/branch-artifacts/namespace/project/branch/job/folder/subfolder/file.html>
 
 if your files are like this:
 
@@ -33,3 +40,4 @@ if your files are like this:
 4. the executed job is called **job**
 5. the job has an artifact in the folder called **folder/subfolder**
 6. the artifact is called **file.html**
+

@@ -80,10 +80,12 @@ app.get('/auth/gitlab/callback',
         }
     });
 
+
 // namespace/:repo/:branch/:job/:path
-app.get(/^(.*)$/, storeReturnToInSession, async (req, res) => {
+app.get(/^\/branch-artifacts\/(.*)$/, storeReturnToInSession, async (req, res) => {
     let urlParts = req.path.split('/');
     urlParts.shift(); // space
+    urlParts.shift(); // branch-artifacts
     let namespace = urlParts.shift();
     let project = urlParts.shift();
     let branch = urlParts.shift();
@@ -91,9 +93,16 @@ app.get(/^(.*)$/, storeReturnToInSession, async (req, res) => {
     let path = urlParts.join("/");
 
     try {
-        let response = await
+        // turn /tester/my-test/-/jobs/5/artifacts/file/static/index.html
+        // into /api/v4/projects/tester%2Fmy-test/jobs/5/artifacts/static/index.html
 
-        got.get(process.env.GITLAB_URL + "/api/v4/projects/" + encodeURIComponent(namespace + "/" + project) + "/jobs/artifacts/" + encodeURIComponent(branch) + "/raw/" + path + "?job=" + encodeURIComponent(job), {
+        // replace /-/ with / -> /tester/my-test/jobs/5/artifacts/file/static/index.html
+        // replace /artifacts/file/ with /artifacts/ -> /tester/my-test/jobs/5/artifacts/static/index.html
+        // replace second / with %2F -> /tester%2Fmy-test/jobs/5/artifacts/static/index.html
+        //
+        let requestPath = encodeURIComponent(namespace + "/" + project) + "/jobs/artifacts/" + encodeURIComponent(branch) + "/raw/" + path + "?job=" + encodeURIComponent(job);
+        console.log('requestPath', requestPath);
+        let response = await got.get(process.env.GITLAB_URL + "/api/v4/projects/" + requestPath, {
             headers: {
                 "Authorization": "Bearer " + req.session.passport.user.accessToken
             }
@@ -109,5 +118,49 @@ app.get(/^(.*)$/, storeReturnToInSession, async (req, res) => {
         res.json(error);
     }
 });
+
+// namespace/:repo/-/jobs/:jobId/artifacts/file/:path
+app.get(/^(.*)$/, storeReturnToInSession, async (req, res) => {
+    let urlParts = req.path.split('/');
+    urlParts.shift(); // space
+    let namespace = urlParts.shift();
+    let project = urlParts.shift();
+    let branch = urlParts.shift();
+    let job = urlParts.shift();
+    let path = urlParts.join("/");
+
+    try {
+        // turn /tester/my-test/-/jobs/5/artifacts/file/static/index.html
+        // into /api/v4/projects/tester%2Fmy-test/jobs/5/artifacts/static/index.html
+
+        let requestPath = req.path;
+        // replace /-/ with / -> /tester/my-test/jobs/5/artifacts/file/static/index.html
+        requestPath = requestPath.replace('/-/', '/')
+
+        // replace /artifacts/file/ with /artifacts/ -> /tester/my-test/jobs/5/artifacts/static/index.html
+        requestPath = requestPath.replace('/artifacts/file/', '/artifacts/')
+
+        // replace second / with %2F -> /tester%2Fmy-test/jobs/5/artifacts/static/index.html
+        requestPath = requestPath.replace(/^(\/[^\/]+)(\/)(.+$)/g, '$1' + encodeURIComponent('/') + '$3');
+
+        console.log('requestPath', process.env.GITLAB_URL + "api/v4/projects/" + requestPath);
+        //
+        let response = await got.get(process.env.GITLAB_URL + "api/v4/projects/" + requestPath, {
+            headers: {
+                "Authorization": "Bearer " + req.session.passport.user.accessToken
+            }
+        }).then((response) => {
+            res.set("content-type", response.headers["content-type"]);
+            res.send(response.body);
+        }, (error) => {
+            res.json({
+                "error": error
+            });
+        });
+    } catch (error) {
+        res.json(error);
+    }
+});
+
 
 app.listen(port,  '0.0.0.0', () => console.log(`Listening on port ${port}!`))
