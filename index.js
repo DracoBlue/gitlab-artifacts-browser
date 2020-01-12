@@ -13,8 +13,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-const got = require('got');
+const got = require('got').extend({
+    headers: {
+        "User-Agent": "gitlab-artifacts-browser/" + (process.env.APP_VERSION || 'dev')
+    }
+});
 const port = process.env.PORT || 3000;
+
+app.use((req, res, next) => {
+    res.set('Server', 'gitlab-artifacts-browser ' + (process.env.APP_VERSION || 'dev'))
+    next();
+});
 
 app.get('/', (req, res) => {
     res.json({"message": "nothing to see here"});
