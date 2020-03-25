@@ -4,7 +4,7 @@ const GitLabStrategy = require('passport-gitlab2').Strategy;
 const express = require('express');
 const session = require("express-session");
 const bodyParser = require("body-parser");
-const mime = require('mime-types');
+const mimeTypes = require('mime-types');
 
 const app = express();
 
@@ -108,7 +108,7 @@ app.get(/^\/branch-artifacts\/(.*)$/, storeReturnToInSession, async (req, res) =
                 "Authorization": "Bearer " + req.session.passport.user.accessToken
             }
         }).then((response) => {
-            res.set("content-type", response.headers["content-type"]);
+            res.set("content-type", mimeTypes.lookup(requestPath) || response.headers["content-type"]);
             res.send(response.body);
         }, (error) => {
             res.json({
@@ -151,7 +151,7 @@ app.get(/^(.*)$/, storeReturnToInSession, async (req, res) => {
                 "Authorization": "Bearer " + req.session.passport.user.accessToken
             }
         }).then((response) => {
-            res.set("content-type", mime.lookup(response.url) || response.headers["content-type"]);
+            res.set("content-type", mimeTypes.lookup(requestPath) || response.headers["content-type"]);
             res.send(response.body);
         }, (error) => {
             res.json({
