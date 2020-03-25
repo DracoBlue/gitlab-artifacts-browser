@@ -108,7 +108,7 @@ app.get(/^\/branch-artifacts\/(.*)$/, storeReturnToInSession, async (req, res) =
                 "Authorization": "Bearer " + req.session.passport.user.accessToken
             }
         }).then((response) => {
-            res.set("content-type", mimeTypes.lookup(requestPath) || response.headers["content-type"]);
+            res.set("content-type", mimeTypes.lookup(path) || response.headers["content-type"]);
             res.send(response.body);
         }, (error) => {
             res.json({
