@@ -1,9 +1,10 @@
-require('dotenv').config()
+require('dotenv').config();
 const passport = require('passport');
 const GitLabStrategy = require('passport-gitlab2').Strategy;
 const express = require('express');
 const session = require("express-session");
 const bodyParser = require("body-parser");
+const mime = require('mime-types');
 
 const app = express();
 
@@ -58,7 +59,7 @@ storeReturnToInSession = (req, res, next) => {
             scope: 'api'
         })(req, res, next);
     }
-}
+};
 
 app.get('/auth/gitlab', passport.authenticate('gitlab', {scope: 'api'}));
 
@@ -98,7 +99,7 @@ app.get(/^(.*)$/, storeReturnToInSession, async (req, res) => {
                 "Authorization": "Bearer " + req.session.passport.user.accessToken
             }
         }).then((response) => {
-            res.set("content-type", response.headers["content-type"]);
+            res.set("content-type", mime.lookup(response.url) || response.headers["content-type"]);
             res.send(response.body);
         }, (error) => {
             res.json({
@@ -110,4 +111,4 @@ app.get(/^(.*)$/, storeReturnToInSession, async (req, res) => {
     }
 });
 
-app.listen(port,  '0.0.0.0', () => console.log(`Listening on port ${port}!`))
+app.listen(port,  '0.0.0.0', () => console.log(`Listening on port ${port}!`));
