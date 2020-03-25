@@ -16,7 +16,7 @@ Setup your environment variables, given that:
 GITLAB_URL=https://git.example.org/
 GITLAB_OAUTH_APPLICATION_ID=asdfh
 GITLAB_OAUTH_APPLICATION_SECRET=egfhc
-GITLAB_OAUTH_REDIRECT_URI="http://gitlab-artiacts-browser.example.org/auth/gitlab/callback"
+GITLAB_OAUTH_REDIRECT_URI="http://gitlab-artifacts-browser.example.org/auth/gitlab/callback"
 ```
 
 ## usage
@@ -30,7 +30,7 @@ and suffix your gitlab artifacts browser url with that: <https://gitlab-artiacts
 
 Generate an url relative to your gitlab-artifacts-browser like this:
 
-<http://gitlab-artiacts-browser.example.org/branch-artifacts/namespace/project/branch/job/folder/subfolder/file.html>
+<http://gitlab-artifacts-browser.example.org/branch-artifacts/namespace/project/branch/job/folder/subfolder/file.html>
 
 if your files are like this:
 
